@@ -40,7 +40,14 @@ const Pedometer = () => {
     }
   };
   const todayBounce =
-    new Date(userInfo?.bonus_date).getDay() !== new Date().getDay();
+    new Date(userInfo?.bonus_date).toISOString().slice(0, 10) ===
+    new Date().toISOString().slice(0, 10);
+  console.log("====================================");
+  console.log(
+    new Date(userInfo?.bonus_date).toISOString().slice(0, 10) ===
+      new Date().toISOString().slice(0, 10)
+  );
+  console.log("====================================");
 
   useEffect(() => {
     getUserInfo();
@@ -86,7 +93,7 @@ const Pedometer = () => {
         </div>
       </div>
       <div className="btn-row-primary">
-        {todayBounce && (
+        {!todayBounce && (
           <div className="full-btn-inner" onClick={postSteps}>
             <FireIcon />
             <span>Бесплатная энергия</span>

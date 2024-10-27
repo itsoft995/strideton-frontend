@@ -278,7 +278,7 @@ function StepCounter({ setpassed }) {
     }
   };
 
-  const socketUrl = "ws://91.92.137.52:9988";
+  const socketUrl = "wss://dc.strideton.io:9988";
   const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
     onOpen: () => console.log("Connected to WebSocket"),
     onClose: () => console.log("Disconnected from WebSocket"),

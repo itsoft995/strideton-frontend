@@ -3,8 +3,7 @@ import rootRoutes from "./routes/rootRootes";
 import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import api from "./utils/request";
-import { getDeviceType } from "./utils/getDevice";
-
+import load from "./assets/images/load.png";
 function App() {
   const { pathname } = useLocation();
   const [loading, setLoading] = useState(true);
@@ -37,7 +36,6 @@ function App() {
       if (window.Telegram && window.Telegram.WebApp) {
         const user = window.Telegram.WebApp.initDataUnsafe.user;
         if (user) {
-          alert("TESING SERVER WORK:");
           setLoading(false);
           localStorage.setItem("user_id", user.id);
           fetchData({
@@ -80,9 +78,12 @@ function App() {
           alignItems: "center",
           width: "100%",
           height: "100vh",
+          backgroundImage: `url(${load})`,
+          backgroundSize: "100%",
+          backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="loader" style={{ "--loader-color": "#0098EA" }}></div>
+        <div className="loader" style={{ "--loader-color": "white", bottom: '-30vh', position: 'relative' }}></div>
       </div>
     );
   }

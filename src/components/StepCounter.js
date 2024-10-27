@@ -162,7 +162,7 @@ function StepCounter({ setpassed }) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const stepThreshold = deviceType === "iOS" ? 4 : 12.5;
+  const stepThreshold = deviceType === "iOS" ? 2 : 12.5;
   const shakeThreshold = 20;
   const stepInterval = 200;
   const shakeInterval = 500;

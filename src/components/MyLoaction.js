@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
+import React, { useState, useEffect } from "react";
+import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
+import { GPSIcon } from "../assets/icons";
 
 const LocationMap = () => {
   const [position, setPosition] = useState([55.751244, 37.618423]); // Default coordinates (Moscow)
@@ -22,16 +23,31 @@ const LocationMap = () => {
   }, []);
 
   return (
-    <YMaps>
-      <Map
-        defaultState={{ center: position, zoom: 10 }}
-        state={{ center: position, zoom: 13 }}
-        width="100%"
-        height="100vh"
+    <>
+      <YMaps>
+        <Map
+          defaultState={{ center: position, zoom: 10 }}
+          state={{ center: position, zoom: 13 }}
+          width="100%"
+          height="100vh"
+        >
+          <Placemark
+            geometry={position}
+            options={{ preset: "islands#redDotIcon" }}
+          />
+        </Map>
+      </YMaps>
+      <button
+        className="gps-btn"
+        onClick={() =>
+          navigator.geolocation.getCurrentPosition((position) =>
+            setPosition([position.coords.latitude, position.coords.longitude])
+          )
+        }
       >
-        <Placemark geometry={position} options={{ preset: 'islands#redDotIcon' }} />
-      </Map>
-    </YMaps>
+        <GPSIcon />
+      </button>
+    </>
   );
 };
 

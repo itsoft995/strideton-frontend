@@ -99,15 +99,24 @@ function detectStep(
   stepInterval,
 
   speed,
-  isMoving
+  isMoving,
+  deviceType
 ) {
   const now = Date.now();
   if (acceleration >= stepThreshold && now - lastStepTime >= stepInterval) {
     if (!isAboveThreshold) {
       setStepCount((count) => count + 1);
-      if (isMoving) {
-        if (speed > 20) {
-          setStepCount((count) => count + 1);
+      if (deviceType === "iOS") {
+        if (isMoving) {
+          if (speed > 20) {
+            setStepCount((count) => count + 1);
+          }
+        }
+      } else {
+        if (isMoving) {
+          if (speed > 20) {
+            setStepCount((count) => count + 1);
+          }
         }
       }
       setIsAboveThreshold(true);
@@ -154,7 +163,7 @@ function StepCounter({ setpassed }) {
   const [isSaving, setIsSaving] = useState(false);
   const [status, setStatus] = useState(0);
 
-  const stepThreshold = 1;
+  const stepThreshold = deviceType === "iOS" ? 1 : 12.5;
   const shakeThreshold = 20;
   const stepInterval = 200;
   const shakeInterval = 500;
@@ -205,7 +214,8 @@ function StepCounter({ setpassed }) {
           stepThreshold,
           stepInterval,
           speed,
-          isMoving
+          isMoving,
+          deviceType
         )
       );
     }
@@ -233,20 +243,25 @@ function StepCounter({ setpassed }) {
     isMoving
   );
   useEffect(() => {
-    setpassed(stepCount);
-  }, [stepCount]);
+    if (deviceType === "iOS") {
+      setpassed(stepCount);
+    } else {
+      setpassed(updatedStepCount);
+    }
+  }, [stepCount, updatedStepCount]);
   const fetchData = () => {
+    const sendingStep = deviceType === "iOS" ? stepCount : updatedStepCount;
     let existingData = JSON.parse(localStorage.getItem("stepData")) || {
       status: 0,
       category_id: 1,
-      steps: stepCount,
+      steps: sendingStep,
     };
     localStorage.setItem("stepData", JSON.stringify(existingData));
     postSteps(existingData);
     if (existingData.status === 0) {
       console.log("Saved data:", existingData);
       existingData.status = 1;
-      localStorage.setItem("stepData", JSON.stringify(existingData)); 
+      localStorage.setItem("stepData", JSON.stringify(existingData));
     }
   };
   useEffect(() => {
@@ -264,7 +279,7 @@ function StepCounter({ setpassed }) {
   };
 
   const socketUrl = "ws://91.92.137.52:9988";
-  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+  const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
     onOpen: () => console.log("Connected to WebSocket"),
     onClose: () => console.log("Disconnected from WebSocket"),
     onError: (event) => console.error("WebSocket error:", event),
@@ -273,12 +288,13 @@ function StepCounter({ setpassed }) {
 
   // Function to send the "actionStepUpdate" message
   const sendStepUpdate = () => {
+    const sendingStep = deviceType === "iOS" ? stepCount : updatedStepCount;
     const message = JSON.stringify({
       action: "actionStepUpdate",
       body: {
         user_id: Number(userInfo?.user_id) || 1,
         category_id: 1,
-        steps: stepCount,
+        steps: sendingStep,
       },
     });
     sendMessage(message);
@@ -289,7 +305,7 @@ function StepCounter({ setpassed }) {
     if (lastMessage !== null) {
       const data = JSON.parse(lastMessage.data);
       const stepWeb = data.data.data;
-
+      console.log("Step update response:", data);
       setuserInfo(stepWeb);
       if (data.action === "actionStepUpdate") {
         console.log("Step update response:", data);

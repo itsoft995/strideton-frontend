@@ -58,13 +58,13 @@ function App() {
 
         window.Telegram.WebApp.expand();
       } else {
-        // alert("Telegram WebApp не обнаружен");
-        fetchData({
-          user_id: 349499,
-          firstName: " user.first_name",
-          lastName: "user.last_name",
-          username: " user.username",
-        });
+        alert("Telegram WebApp не обнаружен");
+        // fetchData({
+        //   user_id: 349499,
+        //   firstName: " user.first_name",
+        //   lastName: "user.last_name",
+        //   username: " user.username",
+        // });
       }
     };
 

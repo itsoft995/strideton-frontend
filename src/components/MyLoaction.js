@@ -24,19 +24,30 @@ const LocationMap = () => {
 
   return (
     <>
-      <YMaps>
-        <Map
-          defaultState={{ center: position, zoom: 10 }}
-          state={{ center: position, zoom: 13 }}
-          width="100%"
-          height="100vh"
-        >
-          <Placemark
-            geometry={position}
-            options={{ preset: "islands#redDotIcon" }}
-          />
-        </Map>
-      </YMaps>
+      <div style={{
+        position: "absolute",
+        top: -50,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1,
+        height: "90vh",
+        overflow: "hidden",
+      }}>
+        <YMaps>
+          <Map
+            defaultState={{ center: position, zoom: 14 }}
+            state={{ center: position, zoom: 14 }}
+            width="100%"
+            height="100vh"
+          >
+            <Placemark
+              geometry={position}
+              options={{ preset: "islands#redDotIcon" }}
+            />
+          </Map>
+        </YMaps>
+      </div>
       <button
         className="gps-btn"
         onClick={() =>

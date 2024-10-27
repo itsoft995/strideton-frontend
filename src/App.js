@@ -34,6 +34,7 @@ function App() {
   useEffect(() => {
     const initializeTelegramWebApp = () => {
       if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.expand();
         const user = window.Telegram.WebApp.initDataUnsafe.user;
         if (user) {
           setLoading(false);
@@ -54,7 +55,6 @@ function App() {
           });
         }
 
-        window.Telegram.WebApp.expand();
       } else {
         alert("Telegram WebApp не обнаружен");
         // fetchData({

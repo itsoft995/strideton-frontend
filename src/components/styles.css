@@ -1,0 +1,90 @@
+.container__step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.progress-ring {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    padding-top: 30px;
+}
+.progress-ring svg{
+    transform: scale(1.4);
+}
+
+.progress-ring__circle {
+    transform: rotate(-239deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.tick-marks {
+    transform: rotate(-242deg);
+    transform-origin: center;
+}
+
+.tick {
+    stroke: #ddd;
+    stroke-width: 1.5;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.progress-text__label {
+    color: #666;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.progress-text__value {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.progress-text__goal {
+    color: #666;
+    font-size: 14px;
+}
+
+.total-steps {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.total-steps__value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.total-steps__label {
+    color: #666;
+    font-size: 16px;
+}
+
+.steps-icon {
+    color: #3b82f6;
+    font-size: 24px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: #f0f0f0;
+    cursor: pointer;
+}

@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,6 +21,26 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20"
+
+      - name: Deploy to server
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Move build to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            cd /web/${{ env.DOMAIN }}/public_html/frontend/
+
+            git stash
+            git pull origin main
+
+            # mv build ../build
+
+            # rm -rf build
+
+            echo "Build has been moved and cleaned up successfully!"
+          EOF
 
       - name: Install dependencies if package files changed
         run: |
@@ -34,79 +54,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-files
-          path: build
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-files
-          path: build
-
-      - name: Setup SSH Keys
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Deploy to server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-            cd /web/${{ env.DOMAIN }}/public_html/frontend/
-            rm -rf build
-            echo "Preparing to deploy build files to server..."
-          EOF
-          
-          scp -r build/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/web/${{ env.DOMAIN }}/public_html/frontend/build/
-          echo "Build files uploaded to server successfully."
-
-  move:
-    runs-on: ubuntu-latest
-    needs: deploy
-
-    steps:
-      - name: Setup SSH Keys
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Move build to the server location
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-            cd /web/${{ env.DOMAIN }}/public_html/frontend/
-            mv build ../build
-            rm -rf build
-            echo "Build has been moved to /web/${{ env.DOMAIN }}/public_html/build and cleaned up successfully."
-          EOF
-
-  notify:
-    runs-on: ubuntu-latest
-    needs: move
-
-    steps:
       - name: Health Check
         run: |
-          curl --fail https://strideton.io/ || exit 1
+          curl --fail https://${{ env.DOMAIN }}/ || exit 1
           echo "Deployment successful!"
-
-      - name: Send Notification
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            Deployment complete 🚀
-            ${{ github.actor }} created commit:
-            Commit made by: ${{ github.event.commits[0].author.name }}
-            Commit message: ${{ github.event.commits[0].message }}
-            Repository: ${{ github.repository }}
-            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}

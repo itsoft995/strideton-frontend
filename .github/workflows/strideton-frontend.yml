@@ -30,7 +30,7 @@ jobs:
       - name: Move build to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-            cd /web/${{ env.DOMAIN }}/public_html/frontend/
+            cd web/${{ env.DOMAIN }}/public_html/frontend/
 
             git stash
             git pull origin main

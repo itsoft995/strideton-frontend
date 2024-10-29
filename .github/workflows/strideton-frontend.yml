@@ -1,0 +1,51 @@
+name: React Frontend Deployment
+
+env:
+  DOMAIN: strideton.io
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install --force
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to server
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Move build to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            cd /web/${{ env.DOMAIN }}/public_html/frontend/
+
+            mv build ../build
+
+            rm -rf build
+
+            echo "Build has been moved and cleaned up successfully!"
+          EOF
+
+      - name: Health Check
+        run: |
+          curl --fail https://strideton.io/ || exit 1
+          echo "Deployment successful!"

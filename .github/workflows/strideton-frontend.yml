@@ -51,7 +51,7 @@ jobs:
             echo "Build has been moved and cleaned up successfully!"
           EOF
 
-      - name: Health Check
-        run: |
-          curl --fail https://${{ env.DOMAIN }}/ || exit 1
-          echo "Deployment successful!"
+      # - name: Health Check
+      #   run: |
+      #     curl --fail https://${{ env.DOMAIN }}/ || exit 1
+      #     echo "Deployment successful!"

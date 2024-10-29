@@ -35,24 +35,21 @@ jobs:
             git stash
             git pull origin main
 
-            # mv build ../build
+            if git diff --name-only HEAD HEAD~1 | grep -E 'package(-lock)?.json'; then
+            echo "package.json or package-lock.json has changed. Running npm install."
+            npm install --force
+            else
+              echo "No changes in package files. Skipping npm install."
+            fi
 
-            # rm -rf build
+            npm run build
+
+            mv build ../build
+
+            rm -rf build
 
             echo "Build has been moved and cleaned up successfully!"
           EOF
-
-      - name: Install dependencies if package files changed
-        run: |
-          if git diff --name-only HEAD HEAD~1 | grep -E 'package(-lock)?.json'; then
-            echo "package.json or package-lock.json has changed. Running npm install."
-            npm install --force
-          else
-            echo "No changes in package files. Skipping npm install."
-          fi
-
-      # - name: Build project
-      #   run: npm run build
 
       - name: Health Check
         run: |

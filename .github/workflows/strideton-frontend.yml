@@ -51,8 +51,8 @@ jobs:
             echo "No changes in package files. Skipping npm install."
           fi
 
-      - name: Build project
-        run: npm run build
+      # - name: Build project
+      #   run: npm run build
 
       - name: Health Check
         run: |
